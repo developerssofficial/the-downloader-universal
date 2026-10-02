@@ -74,7 +74,7 @@ def index():
 @app.route('/api/info', methods=['POST'])
 def get_video_info():
     data = request.json or {}
-    url = data.get('url', '').strip()
+    url = re.sub(r'\s+', '', data.get('url', ''))
     
     if not url:
         return jsonify({'error': 'URL is required'}), 400
@@ -88,7 +88,12 @@ def get_video_info():
             'quiet': True,
             'no_warnings': True,
             'noprogress': True,
-            'nocheckcertificate': True
+            'nocheckcertificate': True,
+            'extractor_args': {
+                'youtube': {
+                    'player_client': ['android', 'ios', 'mweb', 'web_creator']
+                }
+            }
         }
         if FFMPEG_EXE and os.path.exists(str(FFMPEG_EXE)):
             ydl_opts['ffmpeg_location'] = FFMPEG_EXE
@@ -184,7 +189,7 @@ def get_video_info():
 @app.route('/api/download', methods=['POST'])
 def start_download():
     data = request.json or {}
-    url = data.get('url', '').strip()
+    url = re.sub(r'\s+', '', data.get('url', ''))
     format_type = data.get('format_type', 'video')
     quality = data.get('quality', '1080')
     
@@ -312,7 +317,12 @@ def run_downloader_thread(task_id, url, format_type, quality):
             'no_warnings': True,
             'noprogress': True,
             'nocheckcertificate': True,
-            'progress_hooks': [progress_hook_factory(task_id)]
+            'progress_hooks': [progress_hook_factory(task_id)],
+            'extractor_args': {
+                'youtube': {
+                    'player_client': ['android', 'ios', 'mweb', 'web_creator']
+                }
+            }
         }
         if FFMPEG_EXE and os.path.exists(str(FFMPEG_EXE)):
             ydl_opts['ffmpeg_location'] = FFMPEG_EXE
