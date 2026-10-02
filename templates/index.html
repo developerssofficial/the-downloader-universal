@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Downloader • Universal Media & Video Extractor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <div class="app-wrapper">
+    <!-- Navigation Bar -->
+    <header class="navbar">
+      <div class="brand">
+        <div class="logo-box">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">The Downloader <span class="badge-accent">UNIVERSAL</span></h1>
+          <p class="brand-sub">Download Video, Audio & Photos from Any Platform</p>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button id="openFolderBtn" class="btn-ghost" title="Open Downloads Folder">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Downloads Folder</span>
+        </button>
+        <div class="status-indicator">
+          <span class="live-dot"></span>
+          <span>Engine Online</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="main-container">
+      
+      <!-- Input Hero Section -->
+      <section class="hero-card">
+        
+        <!-- Platform badges ribbon -->
+        <div class="platform-ribbon">
+          <span class="p-pill yt">🔴 YouTube</span>
+          <span class="p-pill fb">🔵 Facebook</span>
+          <span class="p-pill ig">🟣 Instagram</span>
+          <span class="p-pill tt">🎵 TikTok</span>
+          <span class="p-pill tw">𝕏 Twitter / X</span>
+          <span class="p-pill pin">📌 Pinterest</span>
+        </div>
+
+        <h2 class="hero-headline">Download Anything, Anywhere</h2>
+        <p class="hero-desc">Paste any video, reel, story or photo link from YouTube, Facebook, Instagram, TikTok or Twitter to download in full original quality with zero limits.</p>
+
+        <div class="search-box">
+          <div class="search-icon-wrapper" id="platformIconWrapper">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </div>
+          <input type="text" id="urlInput" placeholder="Paste link from Facebook, Instagram, YouTube, TikTok or Twitter..." autocomplete="off" spellcheck="false">
+          <button id="pasteClipboardBtn" class="btn-paste" title="Paste from clipboard">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            <span>Paste</span>
+          </button>
+          <button id="analyzeBtn" class="btn-cta">
+            <span class="btn-text">Analyze Link</span>
+            <div class="spinner" id="analyzeSpinner"></div>
+          </button>
+        </div>
+
+        <div id="alertBanner" class="alert-banner hidden"></div>
+      </section>
+
+      <!-- Video / Photo Details & Formats Section -->
+      <section id="mediaSection" class="media-section hidden">
+        <div class="media-grid">
+          
+          <!-- Left: Thumbnail & Meta -->
+          <div class="media-card meta-card">
+            <div class="thumb-container">
+              <img id="videoThumbnail" src="" alt="Thumbnail">
+              <div class="thumb-overlay">
+                <span id="platformPill" class="platform-tag">YouTube</span>
+                <span id="videoDuration" class="meta-pill">00:00</span>
+              </div>
+            </div>
+            <div class="meta-info">
+              <h3 id="videoTitle" class="video-main-title">Media Title</h3>
+              <div class="uploader-badge">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span id="videoUploader">Creator Name</span>
+                <span class="sep">•</span>
+                <span id="videoViews" class="views-text">HD</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Format Picker & Download Trigger -->
+          <div class="media-card options-card">
+            
+            <!-- Type Tabs -->
+            <div class="type-selector" id="typeSelector">
+              <button class="type-btn active" data-type="video" id="tabVideo">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                  <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                </svg>
+                <span>Video (MP4)</span>
+              </button>
+              <button class="type-btn" data-type="audio" id="tabAudio">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18V5l12-2v13"></path>
+                  <circle cx="6" cy="18" r="3"></circle>
+                  <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+                <span>Audio (MP3)</span>
+              </button>
+              <button class="type-btn hidden" data-type="image" id="tabImage">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>Photo (HD)</span>
+              </button>
+            </div>
+
+            <!-- Video Formats Grid -->
+            <div id="videoGrid" class="quality-grid">
+              <div class="quality-item selected" data-quality="1080">
+                <div class="q-top">
+                  <span class="q-res">1080p</span>
+                  <span class="q-tag fhd">Full HD</span>
+                </div>
+                <div class="q-desc">Best Quality 1080p MP4</div>
+              </div>
+              <div class="quality-item" data-quality="720">
+                <div class="q-top">
+                  <span class="q-res">720p</span>
+                  <span class="q-tag hd">HD</span>
+                </div>
+                <div class="q-desc">Standard 720p MP4</div>
+              </div>
+              <div class="quality-item" data-quality="4k">
+                <div class="q-top">
+                  <span class="q-res">4K</span>
+                  <span class="q-tag uhd">2160p Ultra</span>
+                </div>
+                <div class="q-desc">Highest possible resolution</div>
+              </div>
+              <div class="quality-item" data-quality="480">
+                <div class="q-top">
+                  <span class="q-res">480p</span>
+                  <span class="q-tag sd">SD</span>
+                </div>
+                <div class="q-desc">Medium file size</div>
+              </div>
+            </div>
+
+            <!-- Audio Formats Grid -->
+            <div id="audioGrid" class="quality-grid hidden">
+              <div class="quality-item selected" data-quality="mp3-320">
+                <div class="q-top">
+                  <span class="q-res">MP3</span>
+                  <span class="q-tag hq-audio">320 kbps</span>
+                </div>
+                <div class="q-desc">Studio Audio Quality</div>
+              </div>
+              <div class="quality-item" data-quality="mp3-128">
+                <div class="q-top">
+                  <span class="q-res">MP3</span>
+                  <span class="q-tag med-audio">128 kbps</span>
+                </div>
+                <div class="q-desc">Standard Quality</div>
+              </div>
+              <div class="quality-item" data-quality="m4a">
+                <div class="q-top">
+                  <span class="q-res">M4A</span>
+                  <span class="q-tag aac-audio">AAC</span>
+                </div>
+                <div class="q-desc">Original High-Speed Audio</div>
+              </div>
+            </div>
+
+            <!-- Image Formats Grid -->
+            <div id="imageGrid" class="quality-grid hidden">
+              <div class="quality-item selected" data-quality="original-image">
+                <div class="q-top">
+                  <span class="q-res">Full HD Photo</span>
+                  <span class="q-tag uhd">ORIGINAL</span>
+                </div>
+                <div class="q-desc">High Resolution JPG / PNG</div>
+              </div>
+            </div>
+
+            <!-- Action Button -->
+            <button id="startDownloadBtn" class="btn-download-action">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span id="downloadBtnLabel">Download HD Video (1080p)</span>
+              <div class="spinner" id="downloadActionSpinner"></div>
+            </button>
+
+            <!-- Live Progress Box -->
+            <div id="progressBox" class="progress-box hidden">
+              <div class="progress-meta">
+                <span id="progressStatus">Downloading media stream...</span>
+                <span id="progressPercent" class="percent-label">0%</span>
+              </div>
+              <div class="progress-track">
+                <div id="progressBarFill" class="progress-bar-fill" style="width: 0%"></div>
+              </div>
+              <div class="progress-details">
+                <span id="progressSpeed">Speed: 0 MB/s</span>
+                <span id="progressEta">ETA: Calculating...</span>
+              </div>
+            </div>
+
+            <!-- Success Card -->
+            <div id="successCard" class="success-card hidden">
+              <div class="success-icon">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="success-text">
+                <h4>Download Ready!</h4>
+                <p>Downloading file to your browser...</p>
+              </div>
+              <div class="success-actions">
+                <button id="saveFileBtn" class="btn-primary-small">⬇ Save File</button>
+                <button id="openSuccessFolderBtn" class="btn-secondary">Open Folder</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Downloads Section -->
+      <section class="history-section">
+        <div class="history-header">
+          <div class="history-title-group">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 16 16 14"></polyline>
+            </svg>
+            <h3>Recent Downloads</h3>
+          </div>
+          <span class="save-location">Saved to: <code>{{ downloads_dir }}</code></span>
+        </div>
+
+        <div id="historyList" class="history-list">
+          <div class="empty-history">
+            <p>No downloads yet in this session. Paste a Facebook, Instagram, YouTube or TikTok link above to start!</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
