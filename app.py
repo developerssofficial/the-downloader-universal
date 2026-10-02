@@ -16,17 +16,27 @@ import imageio_ffmpeg
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
-DOWNLOADS_DIR = os.path.join(BASE_DIR, 'downloads_cache')
-USER_DOWNLOADS = str(Path.home() / "Downloads")
+if os.environ.get('VERCEL') or sys.platform != 'win32' or not os.access(BASE_DIR, os.W_OK):
+    DOWNLOADS_DIR = os.path.join('/tmp', 'downloads_cache')
+else:
+    DOWNLOADS_DIR = os.path.join(BASE_DIR, 'downloads_cache')
 
-os.makedirs(DOWNLOADS_DIR, exist_ok=True)
+try:
+    os.makedirs(DOWNLOADS_DIR, exist_ok=True)
+except Exception:
+    DOWNLOADS_DIR = '/tmp'
+
+USER_DOWNLOADS = str(Path.home() / "Downloads")
 
 app = Flask(__name__, static_folder=STATIC_DIR, template_folder=TEMPLATES_DIR)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 CORS(app)
 
-FFMPEG_EXE = imageio_ffmpeg.get_ffmpeg_exe()
+try:
+    FFMPEG_EXE = imageio_ffmpeg.get_ffmpeg_exe()
+except Exception:
+    FFMPEG_EXE = None
 
 active_tasks = {}
 download_history = []
@@ -73,13 +83,15 @@ def get_video_info():
 
     try:
         ydl_opts = {
-            'ffmpeg_location': FFMPEG_EXE,
-            'windowsfilenames': True,
+            'windowsfilenames': sys.platform == 'win32',
+            'restrictfilenames': True,
             'quiet': True,
             'no_warnings': True,
             'noprogress': True,
             'nocheckcertificate': True
         }
+        if FFMPEG_EXE and os.path.exists(str(FFMPEG_EXE)):
+            ydl_opts['ffmpeg_location'] = FFMPEG_EXE
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             
@@ -292,10 +304,9 @@ def run_downloader_thread(task_id, url, format_type, quality):
                 return
 
         ydl_opts = {
-            'ffmpeg_location': FFMPEG_EXE,
-            'windowsfilenames': True,
+            'windowsfilenames': sys.platform == 'win32',
             'restrictfilenames': True,
-            'paths': {'home': DOWNLOADS_DIR},
+            'paths': {'home': DOWNLOADS_DIR, 'temp': DOWNLOADS_DIR},
             'outtmpl': {'default': f'{file_prefix}_%(id)s.%(ext)s'},
             'quiet': True,
             'no_warnings': True,
@@ -303,6 +314,8 @@ def run_downloader_thread(task_id, url, format_type, quality):
             'nocheckcertificate': True,
             'progress_hooks': [progress_hook_factory(task_id)]
         }
+        if FFMPEG_EXE and os.path.exists(str(FFMPEG_EXE)):
+            ydl_opts['ffmpeg_location'] = FFMPEG_EXE
         
         if format_type == 'audio':
             if 'mp3' in quality:
