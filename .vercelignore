@@ -1,0 +1,11 @@
+downloads_cache/
+*.mp4
+*.mp3
+*.m4a
+*.part
+__pycache__/
+*.py[cod]
+.git/
+.venv/
+env/
+venv/
